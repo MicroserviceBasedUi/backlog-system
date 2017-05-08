@@ -18,7 +18,8 @@ namespace JiraAdapter {
             return this.Ok(new 
             { 
                 User = this.configuration.JiraUser,
-                Password = this.configuration.JiraPassword
+                Password = this.configuration.JiraPassword,
+                BaseUrl = this.configuration.BaseUrl
             });
         }   
     }

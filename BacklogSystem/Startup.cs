@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using JiraAdapter;
@@ -17,7 +18,7 @@ namespace BacklogSystem{
         public Startup(IHostingEnvironment env){
             var builder = new ConfigurationBuilder()
                                     .SetBasePath(env.ContentRootPath)
-                                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                                     .AddEnvironmentVariables();
 
             this.Configuration = builder.Build();
@@ -31,10 +32,11 @@ namespace BacklogSystem{
         {
             services.AddMvc();
 
-            services.AddSingleton<JiraConfiguration, JiraConfiguration>((_) => new JiraConfiguration
+            services.AddSingleton<JiraConfiguration>((_) => new JiraConfiguration
             {
-                JiraUser = Environment.GetEnvironmentVariable("JiraUser"),
-                JiraPassword = Environment.GetEnvironmentVariable("JiraPassword")
+                JiraUser = this.Configuration.GetValue<string>("Jira:User"),
+                JiraPassword = this.Configuration.GetValue<string>("Jira:Password"),
+                BaseUrl = this.Configuration.GetValue<string>("Jira:BaseUrl")
             });
         }
 

@@ -3,5 +3,7 @@ namespace JiraAdapter {
         public string JiraUser { get; set; }
 
         public string JiraPassword { get; set; }
+
+        public string BaseUrl { get; set; }
     }
 }

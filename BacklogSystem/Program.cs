@@ -9,6 +9,7 @@ namespace BacklogSystem
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
+                .UseUrls("http://localhost:9000")
                 .UseStartup<Startup>()
                 .Build();
 

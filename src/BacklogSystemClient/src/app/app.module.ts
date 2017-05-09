@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
-import { BacklogComponent } from './backlog/backlog.component';
-import { PbiComponent } from './pbi/pbi.component';
+import { BacklogComponent } from './components/backlog/backlog.component';
+import { PbiComponent } from './components/pbi/pbi.component';
 
 @NgModule({
   declarations: [

@@ -1,0 +1,15 @@
+<div class="panel panel-default">
+  
+  <div class="panel-heading">
+    <h3>Remaining User Stories</h3>
+  </div>
+
+  <div class="panel-body">
+    <ul class="list-group">
+      <li *ngFor="let pbi of pbis" class="list-group-item">
+        <app-pbi [pbi]="pbi"></app-pbi>
+      </li>
+    </ul>
+  </div>
+
+</div>

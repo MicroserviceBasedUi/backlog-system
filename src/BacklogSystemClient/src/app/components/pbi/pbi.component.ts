@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-
+import { ProductBacklogItem } from './../../model/productBacklogItem';
 
 @Component({
   selector: 'app-pbi',
@@ -8,16 +8,11 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class PbiComponent implements OnInit {
 
-  @Input() pbi: object;
+  @Input() pbi: ProductBacklogItem;
   
   constructor() { }
 
   ngOnInit() {
   }
 
-}
-
-export interface Pbi {
-  id: string;
-  summary : string;
 }

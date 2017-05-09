@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BacklogService } from './backlog.service';
+import { ProductBacklogItem } from './../../model/productBacklogItem';
 
 @Component({
   selector: 'app-backlog',
@@ -9,7 +10,7 @@ import { BacklogService } from './backlog.service';
 })
 export class BacklogComponent implements OnInit {
 
-  public pbis: object[] = [];
+  public pbis: ProductBacklogItem[] = [];
 
   constructor(private backlogService: BacklogService) { }
 

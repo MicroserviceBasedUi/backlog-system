@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace JiraAdapter {
     
@@ -45,16 +46,16 @@ namespace JiraAdapter {
 
         [HttpGet]
         [Route("remaining")]
-        public async Task<IActionResult> Remaining([FromQuery] PagingInfo pagingInfo = null)
+        public async Task<IActionResult> Remaining([FromQuery] PagedQuery pagedQuery = null)
         {
-            pagingInfo = pagingInfo ?? new PagingInfo();
+            pagedQuery = pagedQuery ?? new PagedQuery();
 
             this.Response.ContentType = "application/json";
 
             var query = new {
                 jql = $"project = {ProjectName} AND issuetype = {StoryIssueType} AND status NOT IN ({string.Join(", ", ExcludedStates)})",
-                startAt = pagingInfo.StartAt,
-                maxResults = pagingInfo.MaxPageSize,
+                startAt = pagedQuery.StartAt,
+                maxResults = pagedQuery.MaxResults,
                 fields = new [] 
                 {
                     "summary",
@@ -62,13 +63,24 @@ namespace JiraAdapter {
                 }
             };
 
-            return this.Ok(await this.SendPostRequest($"search", query));
+            return this.Ok(await this.SendPostRequest("search", query));
+        }
+
+        [HttpPost]
+        [Route("search")]
+        public async Task<IActionResult> Search([FromBody] JiraQuery query) {
+            this.Response.ContentType = "application/json";
+
+            return this.Ok(await this.SendPostRequest("search", query));
         }
 
         private async Task<string> SendPostRequest(string url, object payload)
         {
 
-            var stringContent = JsonConvert.SerializeObject(payload);
+            var stringContent = JsonConvert.SerializeObject(payload, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
 
             var content = new StringContent(stringContent);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");

@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace BacklogSystem{
     public class Startup
@@ -31,6 +33,14 @@ namespace BacklogSystem{
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSwaggerGen((c) => {
+                c.SwaggerDoc("v1", new Info { Title = "Backlog System API", Version = "v1" });
+
+                //Set the comments path for the swagger json and ui.
+                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                var xmlPath = Path.Combine(basePath, "BacklogSystem.xml"); 
+                c.IncludeXmlComments(xmlPath);
+            });
 
             services.AddSingleton<JiraConfiguration>((_) => new JiraConfiguration
             {
@@ -46,6 +56,12 @@ namespace BacklogSystem{
             loggerFactory.AddConsole();
 
             app.UseMvc();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Backlog System API v1");
+            });
 
             if (env.IsDevelopment())
             {

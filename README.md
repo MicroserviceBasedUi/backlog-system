@@ -1,16 +1,10 @@
 # backlog-system
 
-## Remaining Backlog Endpoint
+## Endpoint documentation
 
-http://localhost:8000/api/backlog/remaining
+A full documentation of the provided endpoints can be found here: http://localhost:8000/swagger/
 
-In order to provide a more robust system, we need to page the records. Use the following query parameters to page through all the records:
-
-| Param Name | Default Value|
-|------------|-------------:|
-| startAt    | 0            |
-| maxPageSize| 100          |
-
+## Configuration
 
 Make sure that you also provide an authorized user with a valid password in your environment configuration:
 

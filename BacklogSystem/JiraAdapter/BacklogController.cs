@@ -24,6 +24,9 @@ namespace JiraAdapter {
             this.configuration = configuration;
         }
 
+        /// <summary>
+        /// Returns the configuration that is used to access Jira.
+        /// </summary>
         [HttpGet]
         [Route("config")]
         public IActionResult GetConfig() {
@@ -35,6 +38,16 @@ namespace JiraAdapter {
             });
         }
 
+        /// <summary>
+        /// Provides the details of the requested issue.
+        /// </summary>
+        /// <remarks>
+        /// Note that the issue id is a string and not an integer or a GUID.
+        ///
+        ///     e. g. AP-1
+        ///
+        /// </remarks>
+        /// <param name="issueId">The ID of the issue.</param>
         [HttpGet]
         [Route("issue/{issueId}")]
         public async Task<IActionResult> Get(string issueId)
@@ -44,6 +57,9 @@ namespace JiraAdapter {
             return this.Ok(await this.SendGetRequest($"issue/{issueId}"));
         }   
 
+        /// <summary>
+        /// Provides a list of remaining stories in the backlog.
+        /// </summary>
         [HttpGet]
         [Route("remaining")]
         public async Task<IActionResult> Remaining([FromQuery] PagedQuery pagedQuery = null)
@@ -66,6 +82,10 @@ namespace JiraAdapter {
             return this.Ok(await this.SendPostRequest("search", query));
         }
 
+        /// <summary>
+        /// Provides a powerful and flexible way to query Jira.
+        /// The given query will directly be passed onto Jira.
+        /// </summary>
         [HttpPost]
         [Route("search")]
         public async Task<IActionResult> Search([FromBody] JiraQuery query) {

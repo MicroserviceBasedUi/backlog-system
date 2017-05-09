@@ -8,10 +8,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace JiraAdapter {
-    
+
     [Route("api/backlog")]
     public class BacklogController : Controller {
-        
+
         private const string ProjectName = "AP";
 
         private const string StoryIssueType = "story";
@@ -27,11 +27,10 @@ namespace JiraAdapter {
         /// <summary>
         /// Returns the configuration that is used to access Jira.
         /// </summary>
-        [HttpGet]
-        [Route("config")]
+        [HttpGet("config")]
         public IActionResult GetConfig() {
-            return this.Ok(new 
-            { 
+            return this.Ok(new
+            {
                 User = this.configuration.JiraUser,
                 Password = this.configuration.JiraPassword,
                 BaseUrl = this.configuration.BaseUrl
@@ -48,20 +47,18 @@ namespace JiraAdapter {
         ///
         /// </remarks>
         /// <param name="issueId">The ID of the issue.</param>
-        [HttpGet]
-        [Route("issue/{issueId}")]
+        [HttpGet("issue/{issueId}")]
         public async Task<IActionResult> Get(string issueId)
         {
             this.Response.ContentType = "application/json";
 
             return this.Ok(await this.SendGetRequest($"issue/{issueId}"));
-        }   
+        }
 
         /// <summary>
         /// Provides a list of remaining stories in the backlog.
         /// </summary>
-        [HttpGet]
-        [Route("remaining")]
+        [HttpGet("remaining")]
         public async Task<IActionResult> Remaining([FromQuery] PagedQuery pagedQuery = null)
         {
             pagedQuery = pagedQuery ?? new PagedQuery();
@@ -75,7 +72,35 @@ namespace JiraAdapter {
                 fields = new [] 
                 {
                     "summary",
-                    "status"
+                    "status",
+                    "customfield_10006", // Sprint
+                    "customfield_10004" // Story Points
+                }
+            };
+
+            return this.Ok(await this.SendPostRequest("search", query));
+        }
+
+		        /// <summary>
+        /// Provides a list of remaining stories in the backlog.
+        /// </summary>
+        [HttpGet("closed")]
+        public async Task<IActionResult> Closed([FromQuery] PagedQuery pagedQuery = null)
+        {
+            pagedQuery = pagedQuery ?? new PagedQuery();
+
+            this.Response.ContentType = "application/json";
+
+            var query = new {
+                jql = $"project = {ProjectName} AND issuetype = {StoryIssueType} AND status IN ({string.Join(", ", ExcludedStates)})",
+                startAt = pagedQuery.StartAt,
+                maxResults = pagedQuery.MaxResults,
+                fields = new [] 
+                {
+                    "summary",
+                    "status",
+                    "customfield_10006", // Sprint
+                    "customfield_10004" // Story Points
                 }
             };
 
@@ -86,13 +111,20 @@ namespace JiraAdapter {
         /// Provides a powerful and flexible way to query Jira.
         /// The given query will directly be passed onto Jira.
         /// </summary>
-        [HttpPost]
-        [Route("search")]
+        [HttpPost("search")]
         public async Task<IActionResult> Search([FromBody] JiraQuery query) {
             this.Response.ContentType = "application/json";
 
             return this.Ok(await this.SendPostRequest("search", query));
         }
+
+        /// <summary>
+        /// Queries the versions of the project.
+        /// </summary>
+        [HttpGet("releases")]
+		public async Task<IActionResult> Releases([FromQuery] PagedQuery query) {
+			return this.Ok(this.SendGetRequest($"project/{ProjectName}/versions?expand"));
+		}
 
         private async Task<string> SendPostRequest(string url, object payload)
         {
@@ -110,7 +142,7 @@ namespace JiraAdapter {
             return await response.Content.ReadAsStringAsync();
         }
 
-        private async Task<string> SendGetRequest(string url) 
+        private async Task<string> SendGetRequest(string url)
         {
             return await this.SendRequest(client => client.GetAsync($"{this.configuration.BaseUrl}/{url}")).Content.ReadAsStringAsync();
         }

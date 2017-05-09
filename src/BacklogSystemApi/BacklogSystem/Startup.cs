@@ -38,14 +38,14 @@ namespace BacklogSystem{
 
                 //Set the comments path for the swagger json and ui.
                 var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                var xmlPath = Path.Combine(basePath, "BacklogSystem.xml"); 
+                var xmlPath = Path.Combine(basePath, "BacklogSystem.xml");
                 c.IncludeXmlComments(xmlPath);
             });
 
             services.AddSingleton<JiraConfiguration>((_) => new JiraConfiguration
             {
-                JiraUser = this.Configuration.GetValue<string>("Jira:User"),
-                JiraPassword = this.Configuration.GetValue<string>("Jira:Password"),
+                JiraUser = this.Configuration.GetValue<string>("Jira:User") ?? this.Configuration.GetValue<string>("JIRA_USER"),
+                JiraPassword = this.Configuration.GetValue<string>("Jira:Password") ?? this.Configuration.GetValue<string>("JIRA_PASSWORD"),
                 BaseUrl = this.Configuration.GetValue<string>("Jira:BaseUrl")
             });
         }

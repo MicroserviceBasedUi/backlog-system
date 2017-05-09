@@ -1,10 +1,23 @@
 # backlog-system
 
-## Endpoint documentation
+## Backlog System UI
 
-A full documentation of the provided endpoints can be found here: http://localhost:8000/swagger/
+The user interface is an angular application (angular cli). Use the following command to start it:
+```
+ng serve
+```
 
-## Configuration
+## Backlog System API
+
+### Endpoint documentation
+
+A full documentation of the provided endpoints can be found here: 
+
+```
+http://localhost:8000/swagger/
+```
+
+### Configuration
 
 Make sure that you also provide an authorized user with a valid password in your environment configuration:
 
@@ -13,3 +26,4 @@ Make sure that you also provide an authorized user with a valid password in your
         "Jira:User": "<username>",
         "Jira:Password": "<password>"
     }
+```

@@ -96,6 +96,7 @@ namespace JiraAdapter
                 {
                     "summary",
                     "status",
+					"priority",
                     "customfield_10006", // Sprint
                     "customfield_10004"  // Story Points
                 }
@@ -108,6 +109,12 @@ namespace JiraAdapter
 				Id = x.Key,
 				Summary = x.Fields["summary"].ToString(),
 				StoryPoints = ToNullableInt(x.Fields["customfield_10004"].ToString()),
+				Priority = new Priority
+				{
+					Id = x.Fields["priority"].Value<string>("id"),
+					IconUrl = x.Fields["priority"].Value<string>("iconUrl"),
+					Name = x.Fields["priority"].Value<string>("name")
+				}
 			});
 
             return this.Ok(issues);

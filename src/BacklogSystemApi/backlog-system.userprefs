@@ -6,7 +6,7 @@
       <File FileName="BacklogSystem/JiraAdapter/JiraBridge/JiraQuery.cs" Line="1" Column="33" />
       <File FileName="BacklogSystem/JiraAdapter/JiraBridge/JiraResponse.cs" Line="13" Column="58" />
       <File FileName="BacklogSystem/JiraAdapter/JiraBridge/PagedQuery.cs" Line="13" Column="2" />
-      <File FileName="BacklogSystem/JiraAdapter/BacklogController.cs" Line="68" Column="66" />
+      <File FileName="BacklogSystem/JiraAdapter/BacklogController.cs" Line="106" Column="65" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

@@ -50,7 +50,8 @@ namespace BacklogSystem
             {
                 JiraUser = this.Configuration.GetValue<string>("Jira:User") ?? this.Configuration.GetValue<string>("JIRA_USER"),
                 JiraPassword = this.Configuration.GetValue<string>("Jira:Password") ?? this.Configuration.GetValue<string>("JIRA_PASSWORD"),
-                BaseUrl = this.Configuration.GetValue<string>("Jira:BaseUrl")
+                BaseUrl = this.Configuration.GetValue<string>("Jira:BaseUrl"),
+                AgileBaseUrl = this.Configuration.GetValue<string>("Jira:AgileBaseUrl")
             });
         }
 

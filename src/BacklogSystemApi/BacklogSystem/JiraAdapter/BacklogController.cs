@@ -35,13 +35,9 @@ namespace JiraAdapter
         /// Returns the configuration that is used to access Jira.
         /// </summary>
         [HttpGet("config")]
+		[ProducesResponseType(typeof(JiraConfiguration), 200)]
         public IActionResult GetConfig() {
-            return this.Ok(new
-            {
-                User = this.configuration.JiraUser,
-                Password = this.configuration.JiraPassword,
-                BaseUrl = this.configuration.BaseUrl
-            });
+            return this.Ok(this.configuration);
         }
 
         /// <summary>
@@ -62,6 +58,25 @@ namespace JiraAdapter
             return this.Ok(await this.SendGetRequest($"issue/{issueId}"));
         }
 
+		/// <summary>
+        /// Changes the ranking of the requested issue.
+        /// </summary>
+		[HttpPut("issue/{issueId}/rank")]
+		public async Task<IActionResult> Rank(string issueId, [FromBody] UpdateRankRequest updateRequest) 
+		{
+			this.Response.ContentType = "application/json";
+
+			var request = new
+			{
+				issues = new[] { issueId },
+				rankBeforeIssue = updateRequest.RankBeforeIssue
+			};
+
+			await this.SendPutRequest($"{this.configuration.AgileBaseUrl}/issue/rank", request);
+
+			return this.Ok();
+		}
+
         /// <summary>
         /// Provides a list of remaining stories in the backlog.
         /// </summary>
@@ -74,7 +89,7 @@ namespace JiraAdapter
             this.Response.ContentType = "application/json";
 
             var query = new {
-                jql = $"project = {ProjectName} AND issuetype = {StoryIssueType} AND status NOT IN ({string.Join(", ", ExcludedStates)})",
+                jql = $"project = {ProjectName} AND issuetype = {StoryIssueType} AND status NOT IN ({string.Join(", ", ExcludedStates)}) ORDER BY rank",
                 startAt = pagedQuery.StartAt,
                 maxResults = pagedQuery.MaxResults,
                 fields = new [] 
@@ -82,53 +97,23 @@ namespace JiraAdapter
                     "summary",
                     "status",
                     "customfield_10006", // Sprint
-                    "customfield_10004" // Story Points
+                    "customfield_10004"  // Story Points
                 }
             };
 
-			var response = JsonConvert.DeserializeObject<JiraResponse>(await this.SendPostRequest("search", query), SerializerSettings);
+			var response = JsonConvert.DeserializeObject<JiraResponse>(await this.SendPostRequest($"{this.configuration.BaseUrl}/search", query), SerializerSettings);
 
 			var issues = response.Issues.Select(x => new ProductBacklogItem
 			{
+				Id = x.Key,
 				Summary = x.Fields["summary"].ToString(),
-				StoryPoints = this.ToNullableInt(x.Fields["customfield_10004"].ToString())
+				StoryPoints = ToNullableInt(x.Fields["customfield_10004"].ToString()),
 			});
 
             return this.Ok(issues);
         }
 
-		private int? ToNullableInt(string input) 
-		{
-			return string.IsNullOrEmpty(input) ? (int?)null : Convert.ToInt32(input);
-		}
-
-        /// <summary>
-        /// Provides a list of remaining stories in the backlog.
-        /// </summary>
-        [HttpGet("closed")]
-        public async Task<IActionResult> Closed([FromQuery] PagedQuery pagedQuery = null)
-        {
-            pagedQuery = pagedQuery ?? new PagedQuery();
-
-            this.Response.ContentType = "application/json";
-
-            var query = new {
-                jql = $"project = {ProjectName} AND issuetype = {StoryIssueType} AND status IN ({string.Join(", ", ExcludedStates)})",
-                startAt = pagedQuery.StartAt,
-                maxResults = pagedQuery.MaxResults,
-                fields = new [] 
-                {
-                    "summary",
-                    "status",
-                    "customfield_10006", // Sprint
-                    "customfield_10004" // Story Points
-                }
-            };
-
-            return this.Ok(await this.SendPostRequest("search", query));
-        }
-
-        /// <summary>
+		/// <summary>
         /// Provides a powerful and flexible way to query Jira.
         /// The given query will directly be passed onto Jira.
         /// </summary>
@@ -136,16 +121,8 @@ namespace JiraAdapter
         public async Task<IActionResult> Search([FromBody] JiraQuery query) {
             this.Response.ContentType = "application/json";
 
-            return this.Ok(await this.SendPostRequest("search", query));
+            return this.Ok(await this.SendPostRequest($"{this.configuration.BaseUrl}/search", query));
         }
-
-        /// <summary>
-        /// Queries the versions of the project.
-        /// </summary>
-        [HttpGet("releases")]
-		public IActionResult Releases([FromQuery] PagedQuery query) {
-			return this.Ok(this.SendGetRequest($"project/{ProjectName}/versions?expand"));
-		}
 
 		[HttpGet("sprints")]
 		public IActionResult GetSprints()
@@ -364,15 +341,31 @@ namespace JiraAdapter
 			});
 		}
 
+		private static int? ToNullableInt(string input) 
+		{
+			return string.IsNullOrEmpty(input) ? (int?)null : Convert.ToInt32(input);
+		}
+
+		private async Task<string> SendPutRequest(string url, object payload)
+		{
+			var stringContent = JsonConvert.SerializeObject(payload, Formatting.Indented, SerializerSettings);
+
+            var content = new StringContent(stringContent);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            var response = this.SendRequest(client => client.PutAsync($"{url}", content));
+
+            return await response.Content.ReadAsStringAsync();
+		}
+
         private async Task<string> SendPostRequest(string url, object payload)
         {
-
             var stringContent = JsonConvert.SerializeObject(payload, Formatting.Indented, SerializerSettings);
 
             var content = new StringContent(stringContent);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            var response = this.SendRequest(client => client.PostAsync($"{this.configuration.BaseUrl}/{url}", content));
+            var response = this.SendRequest(client => client.PostAsync($"{url}", content));
 
             return await response.Content.ReadAsStringAsync();
         }
@@ -389,7 +382,7 @@ namespace JiraAdapter
                 var basicAuthString = Encoding.UTF8.GetBytes($"{this.configuration.JiraUser}:{this.configuration.JiraPassword}");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(basicAuthString));
 
-                return request(client).Result;
+                return request(client).Result.EnsureSuccessStatusCode();
             }
         }
     }

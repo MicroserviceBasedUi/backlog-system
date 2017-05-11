@@ -6,5 +6,7 @@ namespace JiraAdapter {
         public string JiraPassword { get; set; }
 
         public string BaseUrl { get; set; }
+
+        public string AgileBaseUrl { get; set; }
     }
 }

@@ -1,0 +1,20 @@
+﻿<Properties StartupConfiguration="{CEB13028-833F-421E-B770-5AE074B39889}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="BacklogSystem/Startup.cs">
+    <Files>
+      <File FileName="BacklogSystem/Startup.cs" Line="45" Column="1" />
+      <File FileName="BacklogSystem/JiraAdapter/JiraConfiguration.cs" Line="1" Column="1" />
+      <File FileName="BacklogSystem/JiraAdapter/JiraQuery.cs" Line="1" Column="1" />
+      <File FileName="BacklogSystem/JiraAdapter/PagedQuery.cs" Line="1" Column="1" />
+      <File FileName="BacklogSystem/JiraAdapter/BacklogController.cs" Line="18" Column="3" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/lehmamic/Data/Zuehlke/MicroserviceBasedUi/backlog-system/src/BacklogSystemApi/BacklogSystem/Startup.cs" relfile="BacklogSystem/Startup.cs" line="47" column="28" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.BacklogSystem PreferredExecutionTarget="MonoDevelop.Default" />
+</Properties>

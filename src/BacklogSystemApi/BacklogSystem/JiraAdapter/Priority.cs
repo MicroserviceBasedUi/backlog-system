@@ -1,6 +1,6 @@
 namespace JiraAdapter
 {
-    public class Priority
+	public class Priority
     {
         public string Id { get; set; }
 

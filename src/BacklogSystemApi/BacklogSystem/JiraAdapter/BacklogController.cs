@@ -14,7 +14,7 @@ namespace JiraAdapter
 {
 
     [Route("api/backlog")]
-    public class BacklogController : Controller 
+    public class BacklogController : Controller
     {
         private const string ProjectName = "AP";
 
@@ -62,7 +62,7 @@ namespace JiraAdapter
         /// Changes the ranking of the requested issue.
         /// </summary>
 		[HttpPut("issue/{issueId}/rank")]
-		public async Task<IActionResult> Rank(string issueId, [FromBody] UpdateRankRequest updateRequest) 
+		public async Task<IActionResult> Rank(string issueId, [FromBody] UpdateRankRequest updateRequest)
 		{
 			this.Response.ContentType = "application/json";
 
@@ -131,10 +131,31 @@ namespace JiraAdapter
             return this.Ok(await this.SendPostRequest($"{this.configuration.BaseUrl}/search", query));
         }
 
-		[HttpGet("sprints")]
-		public IActionResult GetSprints()
+		[HttpGet("a-sprints")]
+		public async Task<IActionResult> Sprints()
 		{
-			return this.Ok(new [] {
+			var boardId = 16;
+			string result = await this.SendRequest(client => client.GetAsync($"{this.configuration.AgileBaseUrl}/board/{boardId}/sprint/")).Content.ReadAsStringAsync();
+
+			var sprintResponse = JsonConvert.DeserializeObject<BacklogSystem.JiraAdapter.JiraBridge.JiraSprintResponse>(result);
+
+			var sprints = sprintResponse.Values.Select(s => new Sprint
+			{
+				Name = s.Name,
+				StartedAt = s.StartDate,
+				CompletedAt = s.EndDate,
+				Stories = this.GetJiraIssuesForSprint(s).Result
+			});
+
+			return this.Ok(sprints);
+		}
+
+		[HttpGet("sprints")]
+		public async Task<IActionResult> GetSprints()
+		{
+
+			// GET /rest/agile/1.0/board/{boardId}/sprint
+			return this.Ok(await Task.Run(() =>new [] {
 				new {
 						Name = "Sprint1",
 						StartedAt = new DateTime(2017, 1, 1),
@@ -238,7 +259,7 @@ namespace JiraAdapter
 						}
 					}
 				}
-			);
+			));
 		}
 
 		[HttpGet("plannedreleases")]
@@ -348,9 +369,36 @@ namespace JiraAdapter
 			});
 		}
 
-		private static int? ToNullableInt(string input) 
+		private static int? ToNullableInt(string input)
 		{
 			return string.IsNullOrEmpty(input) ? (int?)null : Convert.ToInt32(input);
+		}
+
+		private async Task<IEnumerable<Story>> GetJiraIssuesForSprint(BacklogSystem.JiraAdapter.JiraBridge.JiraSprint sprint)
+		{
+			var query = new
+			{
+				jql = $"project={ProjectName} AND issuetype = {StoryIssueType} and Sprint={sprint.Id}",
+				startAt = 0,
+				maxResults = 50,
+				fields = new[]
+				{
+					"summary",
+					"status",
+					"priority",
+					"customfield_10006", // Sprint
+                    "customfield_10004"  // Story Points
+                }
+			};
+
+			var response = JsonConvert.DeserializeObject<JiraResponse>(await this.SendPostRequest($"{this.configuration.BaseUrl}/search", query), SerializerSettings);
+			return response.Issues.Select(i => new Story
+			{
+				Id = i.Key,
+				Name = i.Fields["summary"].ToString(),
+				StoryPoints = ToNullableInt(i.Fields["customfield_10004"].ToString()).GetValueOrDefault(),
+				Status = i.Fields["status"].Value<string>("name")                                                                    
+			});
 		}
 
 		private async Task<string> SendPutRequest(string url, object payload)
@@ -389,7 +437,9 @@ namespace JiraAdapter
                 var basicAuthString = Encoding.UTF8.GetBytes($"{this.configuration.JiraUser}:{this.configuration.JiraPassword}");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(basicAuthString));
 
-                return request(client).Result.EnsureSuccessStatusCode();
+				var result = request(client).Result;
+				Console.WriteLine(result);
+                return result.EnsureSuccessStatusCode();
             }
         }
     }

@@ -159,12 +159,12 @@ namespace JiraAdapter
 							new {
 								Name = "aaaa",
 								Status = "Done",
-								StoryPoints = 5
+								StoryPoints = 2
 							},
 							new {
 								Name = "bbbb",
 								Status = "Done",
-								StoryPoints = 5
+								StoryPoints = 1
 							}
 						}
 					},
@@ -176,12 +176,12 @@ namespace JiraAdapter
 							new {
 								Name = "cccc",
 								Status = "Done",
-								StoryPoints = 5
+								StoryPoints = 15
 							},
 							new {
 								Name = "dddd",
 								Status = "Done",
-								StoryPoints = 5
+								StoryPoints = 25
 							}
 						}
 					},

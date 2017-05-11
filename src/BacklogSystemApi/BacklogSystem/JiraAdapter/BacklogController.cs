@@ -126,6 +126,223 @@ namespace JiraAdapter {
 			return this.Ok(this.SendGetRequest($"project/{ProjectName}/versions?expand"));
 		}
 
+		[HttpGet("sprints")]
+		public async Task<IActionResult> GetSprints()
+		{
+			return this.Ok(new [] {
+				new {
+						Name = "Sprint1",
+						StartedAt = new DateTime(2017, 1, 1),
+						CompletedAt = new DateTime(2017, 1, 31),
+						Stories = new [] {
+							new {
+								Name = "aaaa",
+								Status = "Done",
+								StoryPoints = 5
+							},
+							new {
+								Name = "bbbb",
+								Status = "Done",
+								StoryPoints = 5
+							}
+						}
+					},
+				new {
+						Name = "Sprint2",
+						StartedAt = new DateTime(2017, 2, 1),
+						CompletedAt = new DateTime(2017, 2, 28),
+						Stories = new [] {
+							new {
+								Name = "cccc",
+								Status = "Done",
+								StoryPoints = 5
+							},
+							new {
+								Name = "dddd",
+								Status = "Done",
+								StoryPoints = 5
+							}
+						}
+					},
+				new {
+						Name = "Sprint3",
+						StartedAt = new DateTime(2017, 3, 1),
+						CompletedAt = new DateTime(2017, 3, 31),
+						Stories = new [] {
+							new {
+								Name = "eeee",
+								Status = "Done",
+								StoryPoints = 5
+							},
+							new {
+								Name = "ffff",
+								Status = "Done",
+								StoryPoints = 5
+							}
+						}
+					},
+					new {
+						Name = "Sprint4",
+						StartedAt = new DateTime(2017, 4, 1),
+						CompletedAt = new DateTime(2017, 4, 30),
+						Stories = new [] {
+							new {
+								Name = "gggg",
+								Status = "Done",
+								StoryPoints = 5
+							},
+							new {
+								Name = "hhhh",
+								Status = "Done",
+								StoryPoints = 5
+							}
+						}
+					},
+					new {
+						Name = "Sprint5",
+						StartedAt = new DateTime(2017, 5, 1),
+						CompletedAt = new DateTime(2017, 5, 31),
+						Stories = new [] {
+							new {
+								Name = "iiii",
+								Status = "Open",
+								StoryPoints = 5
+							},
+							new {
+								Name = "jjjj",
+								Status = "Open",
+								StoryPoints = 5
+							}
+						}
+					},
+					new {
+						Name = "Sprint6",
+						StartedAt = new DateTime(2017, 6, 1),
+						CompletedAt = new DateTime(2017, 6, 30),
+						Stories = new [] {
+							new {
+								Name = "kkkk",
+								Status = "Open",
+								StoryPoints = 5
+							},
+							new {
+								Name = "llll",
+								Status = "Open",
+								StoryPoints = 5
+							}
+						}
+					}
+				}
+			);
+		}
+
+		[HttpGet("plannedreleases")]
+		public async Task<IActionResult> GetReleases() {
+			return this.Ok(new [] {
+				new {
+						Name = "R1",
+						StartDate = new DateTime(2017, 1, 1),
+						ReleaseDate = new DateTime(2017, 6, 30)
+					},
+				new {
+						Name = "R2",
+						StartDate = new DateTime(2017, 7, 1),
+						ReleaseDate = new DateTime(2017, 9, 30)
+					}
+			});
+		}
+
+		[HttpGet("plannedstories")]
+		public async Task<IActionResult> GetStories() {
+			return this.Ok(new [] {
+							new {
+								Name = "kkkk",
+								Status = "Open",
+								StoryPoints = 10,
+								Priority = 1
+							},
+							new {
+								Name = "llll",
+								Status = "Open",
+								StoryPoints = 5,
+								Priority = 2
+							},
+							new {
+								Name = "kkkk",
+								Status = "Open",
+								StoryPoints = 15,
+								Priority = 3
+							},
+							new {
+								Name = "llll",
+								Status = "Open",
+								StoryPoints = 5,
+								Priority = 4
+							},
+							new {
+								Name = "kkkk",
+								Status = "Open",
+								StoryPoints = 10,
+								Priority = 5
+							},
+							new {
+								Name = "llll",
+								Status = "Open",
+								StoryPoints = 5,
+								Priority = 6
+							},
+							new {
+								Name = "kkkk",
+								Status = "Open",
+								StoryPoints = 50,
+								Priority = 7
+							},
+							new {
+								Name = "llll",
+								Status = "Open",
+								StoryPoints = 5,
+								Priority = 8
+							},
+							new {
+								Name = "kkkk",
+								Status = "Open",
+								StoryPoints = 5,
+								Priority = 9
+							},
+							new {
+								Name = "llll",
+								Status = "Open",
+								StoryPoints = 5,
+								Priority = 10
+							},
+							new {
+								Name = "kkkk",
+								Status = "Open",
+								StoryPoints = 5,
+								Priority = 11
+							},
+							new {
+								Name = "llll",
+								Status = "Open",
+								StoryPoints = 5,
+								Priority = 12
+							},
+							new {
+								Name = "kkkk",
+								Status = "Open",
+								StoryPoints = 5,
+								Priority = 13
+							},
+							new {
+								Name = "llll",
+								Status = "Open",
+								StoryPoints = 5,
+								Priority = 14
+							}
+
+			});
+		}
+
         private async Task<string> SendPostRequest(string url, object payload)
         {
 

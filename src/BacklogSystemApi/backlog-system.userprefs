@@ -1,18 +1,17 @@
 ﻿<Properties StartupConfiguration="{CEB13028-833F-421E-B770-5AE074B39889}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="BacklogSystem/Startup.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="BacklogSystem/JiraAdapter/BacklogController.cs">
     <Files>
-      <File FileName="BacklogSystem/Startup.cs" Line="45" Column="1" />
-      <File FileName="BacklogSystem/JiraAdapter/JiraConfiguration.cs" Line="1" Column="1" />
-      <File FileName="BacklogSystem/JiraAdapter/JiraQuery.cs" Line="1" Column="1" />
-      <File FileName="BacklogSystem/JiraAdapter/PagedQuery.cs" Line="1" Column="1" />
-      <File FileName="BacklogSystem/JiraAdapter/BacklogController.cs" Line="18" Column="3" />
+      <File FileName="BacklogSystem/JiraAdapter/ProductBacklogItem.cs" Line="9" Column="2" />
+      <File FileName="BacklogSystem/JiraAdapter/JiraBridge/JiraIssue.cs" Line="10" Column="26" />
+      <File FileName="BacklogSystem/JiraAdapter/JiraBridge/JiraQuery.cs" Line="1" Column="33" />
+      <File FileName="BacklogSystem/JiraAdapter/JiraBridge/JiraResponse.cs" Line="13" Column="58" />
+      <File FileName="BacklogSystem/JiraAdapter/JiraBridge/PagedQuery.cs" Line="13" Column="2" />
+      <File FileName="BacklogSystem/JiraAdapter/BacklogController.cs" Line="68" Column="66" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/Users/lehmamic/Data/Zuehlke/MicroserviceBasedUi/backlog-system/src/BacklogSystemApi/BacklogSystem/Startup.cs" relfile="BacklogSystem/Startup.cs" line="47" column="28" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />

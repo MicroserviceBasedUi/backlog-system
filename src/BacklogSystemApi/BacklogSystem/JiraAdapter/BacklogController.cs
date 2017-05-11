@@ -1,26 +1,33 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using JiraAdapter.JiraBridge;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace JiraAdapter {
+namespace JiraAdapter
+{
 
     [Route("api/backlog")]
-    public class BacklogController : Controller {
-
+    public class BacklogController : Controller 
+    {
         private const string ProjectName = "AP";
 
         private const string StoryIssueType = "story";
 
         private static readonly string[] ExcludedStates = new[] { "done" };
 
+		private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+
         private readonly JiraConfiguration configuration;
 
-        public BacklogController(JiraConfiguration configuration){
+        public BacklogController(JiraConfiguration configuration)
+        {
             this.configuration = configuration;
         }
 
@@ -59,6 +66,7 @@ namespace JiraAdapter {
         /// Provides a list of remaining stories in the backlog.
         /// </summary>
         [HttpGet("remaining")]
+		[ProducesResponseType(typeof(IEnumerable<ProductBacklogItem>), 200)]
         public async Task<IActionResult> Remaining([FromQuery] PagedQuery pagedQuery = null)
         {
             pagedQuery = pagedQuery ?? new PagedQuery();
@@ -78,10 +86,23 @@ namespace JiraAdapter {
                 }
             };
 
-            return this.Ok(await this.SendPostRequest("search", query));
+			var response = JsonConvert.DeserializeObject<JiraResponse>(await this.SendPostRequest("search", query), SerializerSettings);
+
+			var issues = response.Issues.Select(x => new ProductBacklogItem
+			{
+				Summary = x.Fields["summary"].ToString(),
+				StoryPoints = this.ToNullableInt(x.Fields["customfield_10004"].ToString())
+			});
+
+            return this.Ok(issues);
         }
 
-		        /// <summary>
+		private int? ToNullableInt(string input) 
+		{
+			return string.IsNullOrEmpty(input) ? (int?)null : Convert.ToInt32(input);
+		}
+
+        /// <summary>
         /// Provides a list of remaining stories in the backlog.
         /// </summary>
         [HttpGet("closed")]
@@ -122,12 +143,12 @@ namespace JiraAdapter {
         /// Queries the versions of the project.
         /// </summary>
         [HttpGet("releases")]
-		public async Task<IActionResult> Releases([FromQuery] PagedQuery query) {
+		public IActionResult Releases([FromQuery] PagedQuery query) {
 			return this.Ok(this.SendGetRequest($"project/{ProjectName}/versions?expand"));
 		}
 
 		[HttpGet("sprints")]
-		public async Task<IActionResult> GetSprints()
+		public IActionResult GetSprints()
 		{
 			return this.Ok(new [] {
 				new {
@@ -237,7 +258,7 @@ namespace JiraAdapter {
 		}
 
 		[HttpGet("plannedreleases")]
-		public async Task<IActionResult> GetReleases() {
+		public IActionResult GetReleases() {
 			return this.Ok(new [] {
 				new {
 						Name = "R1",
@@ -253,7 +274,7 @@ namespace JiraAdapter {
 		}
 
 		[HttpGet("plannedstories")]
-		public async Task<IActionResult> GetStories() {
+		public IActionResult GetStories() {
 			return this.Ok(new [] {
 							new {
 								Name = "kkkk",
@@ -346,10 +367,7 @@ namespace JiraAdapter {
         private async Task<string> SendPostRequest(string url, object payload)
         {
 
-            var stringContent = JsonConvert.SerializeObject(payload, Formatting.Indented, new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
+            var stringContent = JsonConvert.SerializeObject(payload, Formatting.Indented, SerializerSettings);
 
             var content = new StringContent(stringContent);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");

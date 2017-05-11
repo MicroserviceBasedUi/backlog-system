@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace JiraAdapter 
+namespace JiraAdapter.JiraBridge
 {
     public class PagedQuery 
     {

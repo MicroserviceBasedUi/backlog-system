@@ -1,4 +1,4 @@
-namespace JiraAdapter 
+namespace JiraAdapter.JiraBridge
 {
     /// <summary>
     /// The query passed to the service.
